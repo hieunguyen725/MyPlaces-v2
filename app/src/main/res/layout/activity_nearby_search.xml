@@ -32,7 +32,7 @@
         android:id="@+id/nearbySearch_search_button"
         android:layout_below="@+id/nearbySearch_radius"
         android:layout_centerHorizontal="true"
-        android:background="#E91E63"
+        android:background="#536DFE"
         android:layout_marginTop="20dp"
         android:onClick="searchButtonOnClick"
         android:textColor="@android:color/white" />

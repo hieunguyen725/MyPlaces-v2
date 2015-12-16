@@ -2,7 +2,8 @@ package controller;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -13,11 +14,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.hieunguyen725.myplaces.R;
-
-import java.util.List;
-
-import model.User;
-import model.database.UserDataSource;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
 
 /**
  * Author: Hieu Nguyen
@@ -27,8 +26,6 @@ import model.database.UserDataSource;
  * allow them to move onto another activity to register.
  */
 public class LogInActivity extends AppCompatActivity {
-
-    protected static String sUser;
 
     private EditText mUserName;
     private EditText mPassword;
@@ -44,11 +41,9 @@ public class LogInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
-        SharedPreferences sharedPreferences =
-                this.getSharedPreferences(getString(R.string.SHARED_PREFS), Context.MODE_PRIVATE);
-        boolean loggedIn = sharedPreferences.getBoolean(getString(R.string.LOGGEDIN), false);
-        if (loggedIn) {
-            sUser = sharedPreferences.getString(getString(R.string.LOGGEDIN_USER), "");
+
+        ParseUser user = ParseUser.getCurrentUser();
+        if (user != null) {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
@@ -84,7 +79,7 @@ public class LogInActivity extends AppCompatActivity {
 
     /**
      * Log in button listener, validate the user's username and password
-     * from the database once the login button is clicked. If it is a
+     * from Parse once the login button is clicked. If it is a
      * valid user, allow them to log in and move to the next activity.
      * @param view reference of the widget that was clicked
      */
@@ -98,36 +93,28 @@ public class LogInActivity extends AppCompatActivity {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(),
                 InputMethodManager.HIDE_NOT_ALWAYS);
 
+        if (isOnline()) {
+            mUserName = (EditText) findViewById(R.id.login_username);
+            mPassword = (EditText) findViewById(R.id.login_password);
 
-        mUserName = (EditText) findViewById(R.id.login_username);
-        mPassword = (EditText) findViewById(R.id.login_password);
-
-
-        // Check if the user exists in the database
-        UserDataSource dataSource = new UserDataSource(this);
-        List<User> users = dataSource.findAllUser();
-        boolean validUser = false;
-        for (User user : users) {
-            if (user.getUsername().equals(mUserName.getText().toString())
-                    && user.getPassword().equals(mPassword.getText().toString())) {
-                validUser = true;
-            }
-        }
-        // if it is a valid user, allow them to log in
-        if (validUser) {
-            SharedPreferences sharedPreferences =
-                    this.getSharedPreferences(getString(R.string.SHARED_PREFS), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(getString(R.string.LOGGEDIN), true);
-            editor.putString(getString(R.string.LOGGEDIN_USER), mUserName.getText().toString());
-            editor.commit();
-            sUser = mUserName.getText().toString();
-            Intent intent = new Intent(this, MainActivity.class);
-            Toast.makeText(this, "Logging in", Toast.LENGTH_LONG).show();
-            startActivity(intent);
-            finish();
+            ParseUser.logInInBackground(mUserName.getText().toString(), mPassword.getText().toString(),
+                    new LogInCallback() {
+                        @Override
+                        public void done(ParseUser user, ParseException e) {
+                            if (e == null) {
+                                Intent intent = new Intent(getApplication(), MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                                Toast.makeText(getApplication(), "Logging in",
+                                        Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getApplication(), "Incorrect Username/Password",
+                                        Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
         } else {
-            Toast.makeText(this, "Incorrect Username/Password", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No network connection available", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -144,5 +131,21 @@ public class LogInActivity extends AppCompatActivity {
         mPassword.setText("");
         Intent intent = new Intent(this, RegisterActivity.class);
         startActivity(intent);
+    }
+
+    /**
+     * Check whether the device is connected to a network.
+     * @return true network is available and is connected/connecting,
+     * false otherwise.
+     */
+    private boolean isOnline() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

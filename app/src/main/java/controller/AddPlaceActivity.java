@@ -2,7 +2,8 @@ package controller;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -12,9 +13,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.hieunguyen725.myplaces.R;
+import com.parse.ParseUser;
 
-import model.database.PlacesDataSource;
 import model.Place;
+import model.parse.com.ParsePlace;
 
 /**
  * Author: Hieu Nguyen
@@ -67,16 +69,15 @@ public class AddPlaceActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.log_out) {
-            Intent logout = new Intent(this, LogInActivity.class);
-            MainActivity.sCurrentIntent = null;
-            LogInActivity.sUser = null;
-            SharedPreferences sharedPreferences =
-                    this.getSharedPreferences(getString(R.string.SHARED_PREFS), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(getString(R.string.LOGGEDIN), false);
-            editor.commit();
-            startActivity(logout);
-            finish();
+            if (isOnline()) {
+                ParseUser.logOut();
+                Intent logout = new Intent(this, LogInActivity.class);
+                startActivity(logout);
+                finish();
+            } else {
+                Toast.makeText(this, "Sorry, please turn on network connection " +
+                                "to completely log out.", Toast.LENGTH_LONG).show();
+            }
             return true;
         }
 
@@ -86,44 +87,63 @@ public class AddPlaceActivity extends AppCompatActivity {
     /**
      * Save button on click listener, listen for the save button click
      * to retrieve the data from the user's input and save the new place
-     * to the SQLite database.
+     * to Parse.
      * @param view the reference or view of the widget
      *             that was clicked
      */
     public void saveButtonOnClick(View view) {
-        EditText nameInput = (EditText) findViewById(R.id.addPlace_name_input);
-        EditText addressInput = (EditText) findViewById(R.id.addPlace_address_input);
-        EditText typeInput = (EditText) findViewById(R.id.addPlace_type_input);
-        EditText phoneInput = (EditText) findViewById(R.id.addPlace_phone_input);
-        EditText descriptionInput = (EditText) findViewById(R.id.addPlace_description_input);
+        if (isOnline()) {
+            EditText nameInput = (EditText) findViewById(R.id.addPlace_name_input);
+            EditText addressInput = (EditText) findViewById(R.id.addPlace_address_input);
+            EditText typeInput = (EditText) findViewById(R.id.addPlace_type_input);
+            EditText phoneInput = (EditText) findViewById(R.id.addPlace_phone_input);
+            EditText descriptionInput = (EditText) findViewById(R.id.addPlace_description_input);
 
-        // retrieve the user's inputs
-        String name = nameInput.getText().toString();
-        String address = addressInput.getText().toString();
-        String type = typeInput.getText().toString();
-        String phone = phoneInput.getText().toString();
-        String description = descriptionInput.getText().toString();
+            // retrieve the user's inputs
+            String name = nameInput.getText().toString();
+            String address = addressInput.getText().toString();
+            String type = typeInput.getText().toString();
+            String phone = phoneInput.getText().toString();
+            String description = descriptionInput.getText().toString();
 
-        // check whether any input is blank, if create a new place
-        // it into the database
-        if (name.equals("") || address.equals("") | type.equals("")
-                || phone.equals("") || description.equals("")) {
-            Toast.makeText(this, "Please fill in all inputs", Toast.LENGTH_LONG).show();
+            // check whether any input is blank, if not, create a new place
+            if (name.equals("") || address.equals("") | type.equals("")
+                    || phone.equals("") || description.equals("")) {
+                Toast.makeText(this, "Please fill in all inputs", Toast.LENGTH_LONG).show();
+            } else {
+                // concatenate the user's input hashCode integers as a string for placeID, this way,
+                // only the exact same places will have the same ID
+                String placeID = "" + name.hashCode() + address.hashCode() + type.hashCode()
+                        + phone.hashCode() + description.hashCode();
+                Place place = new Place(placeID, ParseUser.getCurrentUser().getUsername(),
+                        name, address, type, ICON_URL, description, phone);
+
+                // store the new place to Parse
+                place.setContentResource("userContent");
+                ParsePlace parsePlace = new ParsePlace();
+                parsePlace.setData(place);
+                parsePlace.saveInBackground();
+                Toast.makeText(this, "Place Saved", Toast.LENGTH_LONG).show();
+                finish();
+            }
         } else {
-            // concatenate the user's input hashCode integers as a string for placeID, this way,
-            // only the exact same places will have the same ID and the SQLite table will be able
-            // to recognize that same place ID to avoid adding the same place
-            String placeID = "" + name.hashCode() + address.hashCode() + type.hashCode()
-                    + phone.hashCode() + description.hashCode();
-            Place place = new Place(placeID, LogInActivity.sUser, name, address, type,
-                    ICON_URL, description, phone);
+            Toast.makeText(this, "No network connection available", Toast.LENGTH_LONG);
+        }
+    }
 
-            // store the new place to the database
-            place.setContentResource("userContent");
-            PlacesDataSource placesDataSource = new PlacesDataSource(this);
-            placesDataSource.create(place);
-            Toast.makeText(this, "Place Saved", Toast.LENGTH_LONG).show();
-            finish();
+    /**
+     * Check whether the device is connected to a network.
+     * @return true network is available and is connected/connecting,
+     * false otherwise.
+     */
+    private boolean isOnline() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

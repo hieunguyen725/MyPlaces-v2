@@ -2,7 +2,6 @@ package controller;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,12 +18,18 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.hieunguyen725.myplaces.R;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.MyAdapter;
 import model.Place;
-import model.database.PlacesDataSource;
+import model.parse.com.ParsePlace;
 
 /**
  * Author: Hieu Nguyen
@@ -36,7 +41,6 @@ public class MyPlacesActivity extends AppCompatActivity {
 
     public static final String TAG = "MyPlacesActivity";
 
-    private PlacesDataSource mPlacesDataSource;
     private ProgressBar myProgressBar;
     private List<Place> mCurrentPlaces;
 
@@ -45,7 +49,7 @@ public class MyPlacesActivity extends AppCompatActivity {
     /**
      * On Create method to initialize and inflate the activity's
      * user interface. Also initialize a new data source then load
-     * the user's places from the database using the data source.
+     * the user's places from Parse.
      * @param savedInstanceState Bundle containing the data most recently
      *                           saved data through onSaveInstanceState,
      *                           null if nothing was saved.
@@ -58,24 +62,37 @@ public class MyPlacesActivity extends AppCompatActivity {
 
         myProgressBar = (ProgressBar) findViewById(R.id.myPlaces_progressBar);
         myProgressBar.setVisibility(View.INVISIBLE);
-        mPlacesDataSource = new PlacesDataSource(this);
         loadPlaceData();
     }
 
     /**
-     * Load places data from the database using a place data source.
+     * Load places data from the Parse.
      */
     private void loadPlaceData() {
-        mCurrentPlaces = mPlacesDataSource.findUserPlaces("username = " + "'" + LogInActivity.sUser + "'");
-        if (!isOnline()) {
-            Toast.makeText(this, "No network connection", Toast.LENGTH_LONG).show();
-        } else if (mCurrentPlaces.size() > 0) {
-            displayList();
+        if (isOnline()) {
+            ParseQuery<ParsePlace> query = ParseQuery.getQuery(ParsePlace.class);
+            query.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+            query.findInBackground(new FindCallback<ParsePlace>() {
+                @Override
+                public void done(List<ParsePlace> objects, ParseException e) {
+                    if (e == null) {
+                        mCurrentPlaces = new ArrayList<Place>();
+                        for (ParsePlace place : objects) {
+                            mCurrentPlaces.add(place.createModel());
+                        }
+                        displayList();
+                    } else {
+                        Log.d(TAG, "Error: " + e.getMessage());
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(this, "No network connection available", Toast.LENGTH_LONG).show();
         }
     }
 
     /**
-     * Reload places data from the database when on resume called.
+     * Reload places data from Parse when on resume called.
      */
     @Override
     protected void onResume() {
@@ -128,16 +145,15 @@ public class MyPlacesActivity extends AppCompatActivity {
                 return true;
 
             case R.id.log_out:
-                Intent logout = new Intent(this, LogInActivity.class);
-                MainActivity.sCurrentIntent = null;
-                LogInActivity.sUser = null;
-                SharedPreferences sharedPreferences =
-                        this.getSharedPreferences(getString(R.string.SHARED_PREFS), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(getString(R.string.LOGGEDIN), false);
-                editor.commit();
-                startActivity(logout);
-                finish();
+                if (isOnline()) {
+                    ParseUser.logOut();
+                    Intent logout = new Intent(this, LogInActivity.class);
+                    startActivity(logout);
+                    finish();
+                } else {
+                    Toast.makeText(this, "Sorry, please turn on network connection " +
+                                    "to completely log out.", Toast.LENGTH_LONG).show();
+                }
                 return true;
 
             default:
@@ -193,25 +209,41 @@ public class MyPlacesActivity extends AppCompatActivity {
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info =
+        final AdapterView.AdapterContextMenuInfo info =
                 (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int menuIndex = item.getItemId();
-        String placeName = mCurrentPlaces.get(info.position).getName();
+        final String placeName = mCurrentPlaces.get(info.position).getName();
         String placeID = mCurrentPlaces.get(info.position).getPlaceID();
         String placeAddress = mCurrentPlaces.get(info.position).getAddress();
-        if (menuIndex == 0) {
-            String content = placeName + "\n" + placeAddress;
-            Intent sendIntent = new Intent();
-            sendIntent.setAction(Intent.ACTION_SEND);
-            sendIntent.putExtra(Intent.EXTRA_TEXT, content);
-            sendIntent.setType("text/plain");
-            startActivity(sendIntent);
-        } else if (menuIndex == 1) {
-            PlacesDataSource placesDataSource = new PlacesDataSource(this);
-            placesDataSource.deletePlace(LogInActivity.sUser, placeID);
-            mCurrentPlaces.remove(info.position);
-            displayList();
-            Toast.makeText(this, placeName + " is deleted", Toast.LENGTH_LONG).show();
+        if (isOnline()) {
+            if (menuIndex == 0) {
+                String content = placeName + "\n" + placeAddress;
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, content);
+                sendIntent.setType("text/plain");
+                startActivity(sendIntent);
+            } else if (menuIndex == 1) {
+                ParseQuery<ParsePlace> query = ParseQuery.getQuery(ParsePlace.class);
+                query.whereEqualTo("username", ParseUser.getCurrentUser().getUsername());
+                query.whereEqualTo("placeID", placeID);
+                query.getFirstInBackground(new GetCallback<ParsePlace>() {
+                    @Override
+                    public void done(ParsePlace object, ParseException e) {
+                        if (e == null) {
+                            object.deleteInBackground();
+                            mCurrentPlaces.remove(info.position);
+                            displayList();
+                            Toast.makeText(getApplication(), placeName + " is deleted",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.d(TAG, "Unable to delete " + placeName);
+                        }
+                    }
+                });
+            }
+        } else {
+            Toast.makeText(this, "No network connection available", Toast.LENGTH_LONG);
         }
         return true;
     }

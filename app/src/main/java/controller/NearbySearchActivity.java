@@ -3,7 +3,6 @@ package controller;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -28,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.hieunguyen725.myplaces.R;
+import com.parse.ParseUser;
 
 import java.io.IOException;
 import java.util.List;
@@ -117,15 +117,15 @@ public class NearbySearchActivity extends AppCompatActivity {
             };
             // Check whether if the GPS provider exists and if it is enabled in the device
             // If the GPS is enabled, request location updates.
-            if (locationManager.getAllProviders().contains(LocationManager.GPS_PROVIDER)
-                    && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            if (locationManager.getAllProviders().contains(LocationManager.NETWORK_PROVIDER)
+                    && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 // request location update with the location listener to use onLocationChanged(),
                 // given the name of the provider, minimum time interval as 5 seconds,
                 // and minimum distance as 10 meters between location updates
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         5000, 10, locationListener);
             }
-            mLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            mLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         }
     }
 
@@ -195,20 +195,19 @@ public class NearbySearchActivity extends AppCompatActivity {
                 return true;
             
             case R.id.log_out:
-                Intent logout = new Intent(this, LogInActivity.class);
-                MainActivity.sCurrentIntent = null;
-                LogInActivity.sUser = null;
-                SharedPreferences sharedPreferences =
-                        this.getSharedPreferences(getString(R.string.SHARED_PREFS), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(getString(R.string.LOGGEDIN), false);
-                editor.commit();
-                startActivity(logout);
-                finish();
+                if (isOnline()) {
+                    ParseUser.logOut();
+                    Intent logout = new Intent(this, LogInActivity.class);
+                    startActivity(logout);
+                    finish();
+                } else {
+                    Toast.makeText(this, "Sorry, please turn on network connection " +
+                                    "to completely log out.", Toast.LENGTH_LONG).show();
+                }
                 return true;
 
             default:
-                // If we got here, the sUser's action was not recognized.
+                // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
@@ -260,7 +259,7 @@ public class NearbySearchActivity extends AppCompatActivity {
                     task.execute(URL);
                 }
             } else {
-                Toast.makeText(this, "Device location is not enabled",
+                Toast.makeText(this, "Device location network provider is not enabled",
                         Toast.LENGTH_LONG).show();
             }
         } else {

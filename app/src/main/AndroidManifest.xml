@@ -9,9 +9,11 @@
 
     <application
         android:allowBackup="true"
+        android:name="model.parse.com.ParseApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
+
         <activity
             android:name="controller.MainActivity"
             android:windowSoftInputMode="stateHidden"

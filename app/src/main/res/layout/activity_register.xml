@@ -62,7 +62,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="47dp"
         android:hint="Create"
-        android:background="#E91E63"
+        android:background="#536DFE"
         android:onClick="createButtonOnClick"
         android:textColor="@android:color/white" />
 </RelativeLayout>

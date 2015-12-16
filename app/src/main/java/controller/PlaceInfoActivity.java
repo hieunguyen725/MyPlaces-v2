@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -30,14 +29,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hieunguyen725.myplaces.R;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
-import model.database.PlacesDataSource;
 import model.Place;
+import model.parse.com.ParsePlace;
 import model.parsers.JSONParser;
 import model.service.MyConnection;
 
@@ -103,7 +107,7 @@ public class PlaceInfoActivity extends AppCompatActivity {
         } else {
             Bundle extras = getIntent().getExtras();
             mCurrentPlace = new Place();
-            mCurrentPlace.setUsername(LogInActivity.sUser);
+            mCurrentPlace.setUsername(ParseUser.getCurrentUser().getUsername());
             mCurrentPlace.setPlaceID(extras.getString("placeID"));
             mCurrentPlace.setName(extras.getString("placeName"));
             mCurrentPlace.setAddress(extras.getString("placeAddress"));
@@ -175,20 +179,14 @@ public class PlaceInfoActivity extends AppCompatActivity {
                 return true;
 
             case R.id.log_out:
+                ParseUser.logOut();
                 Intent logout = new Intent(this, LogInActivity.class);
-                MainActivity.sCurrentIntent = null;
-                LogInActivity.sUser = null;
-                SharedPreferences sharedPreferences =
-                        this.getSharedPreferences(getString(R.string.SHARED_PREFS), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(getString(R.string.LOGGEDIN), false);
-                editor.commit();
                 startActivity(logout);
                 finish();
                 return true;
 
             default:
-                // If we got here, the sUser's action was not recognized.
+                // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }
@@ -367,14 +365,35 @@ public class PlaceInfoActivity extends AppCompatActivity {
 
     /**
      * Save button on click listener, create a place a data source
-     * to connect to the SQLite database and save the current place.
+     * to connect to Parse and save the current place.
      * @param view reference to the widget that was clicked on.
      */
     public void saveButtonOnClick(View view) {
-        mCurrentPlace.setUsername(LogInActivity.sUser);
-        PlacesDataSource placesDataSource = new PlacesDataSource(this);
-        placesDataSource.create(mCurrentPlace);
-        Toast.makeText(this, "Place Saved", Toast.LENGTH_LONG).show();
+        if (isOnline()) {
+            String currentUser = ParseUser.getCurrentUser().getUsername();
+            mCurrentPlace.setUsername(currentUser);
+
+            ParseQuery<ParsePlace> query = ParseQuery.getQuery(ParsePlace.class);
+            query.whereEqualTo("placeID", mCurrentPlace.getPlaceID());
+            query.whereEqualTo("username", mCurrentPlace.getUsername());
+
+            query.findInBackground(new FindCallback<ParsePlace>() {
+                @Override
+                public void done(List<ParsePlace> objects, ParseException e) {
+                    if (objects.isEmpty()) {
+                        ParsePlace place = new ParsePlace();
+                        place.setData(mCurrentPlace);
+                        place.saveInBackground();
+                        Toast.makeText(getApplication(), "Place Saved", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplication(), "Place is already saved", Toast.LENGTH_LONG).show();
+                    }
+                }
+            });
+
+        } else {
+            Toast.makeText(this, "No network connection available", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
@@ -388,7 +407,7 @@ public class PlaceInfoActivity extends AppCompatActivity {
         if (isOnline()) {
             getLocation();
             if (mLocation == null) {
-                Toast.makeText(this, "Device location is not enabled",
+                Toast.makeText(this, "Device location GPS provider is not enabled",
                         Toast.LENGTH_LONG).show();
             } else {
                 String startAddr = "saddr=" + mLocation.getLatitude() + ","

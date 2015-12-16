@@ -23,7 +23,7 @@
         android:layout_below="@+id/relatedSearch_searchPhrase"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-        android:background="#E91E63"
+        android:background="#536DFE"
         android:onClick="searchButtonOnClick"
         android:textColor="@android:color/white" />
 

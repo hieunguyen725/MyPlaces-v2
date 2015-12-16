@@ -2,7 +2,6 @@ package controller;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -21,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.hieunguyen725.myplaces.R;
+import com.parse.ParseUser;
 
 import java.io.IOException;
 import java.util.List;
@@ -121,20 +121,19 @@ public class RelatedSearchActivity extends AppCompatActivity {
                 return true;
 
             case R.id.log_out:
-                Intent logout = new Intent(this, LogInActivity.class);
-                MainActivity.sCurrentIntent = null;
-                LogInActivity.sUser = null;
-                SharedPreferences sharedPreferences =
-                        this.getSharedPreferences(getString(R.string.SHARED_PREFS), Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(getString(R.string.LOGGEDIN), false);
-                editor.commit();
-                startActivity(logout);
-                finish();
+                if (isOnline()) {
+                    ParseUser.logOut();
+                    Intent logout = new Intent(this, LogInActivity.class);
+                    startActivity(logout);
+                    finish();
+                } else {
+                    Toast.makeText(this, "Sorry, please turn on network connection " +
+                            "to completely log out.", Toast.LENGTH_LONG).show();
+                }
                 return true;
 
             default:
-                // If we got here, the sUser's action was not recognized.
+                // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
         }

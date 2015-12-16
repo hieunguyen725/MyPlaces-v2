@@ -71,7 +71,7 @@
         android:id="@+id/addPlace_save_button"
         android:layout_below="@+id/addPlace_description_input"
         android:layout_centerHorizontal="true"
-        android:background="#E91E63"
+        android:background="#536DFE"
         android:layout_marginTop="10dp"
         android:textColor="@android:color/white"
         android:onClick="saveButtonOnClick" />
