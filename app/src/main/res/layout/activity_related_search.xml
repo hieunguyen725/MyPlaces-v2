@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="controller.RelatedSearchActivity">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/relatedSearch_searchPhrase"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="44dp"
+        android:hint="Search location" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="Search"
+        android:id="@+id/relatedSearch_search_button"
+        android:layout_below="@+id/relatedSearch_searchPhrase"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:background="#E91E63"
+        android:onClick="searchButtonOnClick"
+        android:textColor="@android:color/white" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/relatedSearch_viewlist"
+        android:layout_below="@+id/relatedSearch_search_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/relatedSearch_progressBar"
+        android:layout_alignTop="@+id/relatedSearch_viewlist"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="108dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/relatedSearch_googlelogo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/powered_by_google_on_white"/>
+
+</RelativeLayout>

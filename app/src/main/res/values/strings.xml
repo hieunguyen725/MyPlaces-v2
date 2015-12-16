@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">MyPlaces</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_log_in">My Places</string>
+    <string name="title_activity_register">Register</string>
+    <string name="title_activity_near_by_search">Nearby Search</string>
+    <string name="title_activity_nearby_search">Nearby Search</string>
+    <string name="title_activity_related_search">Related Search</string>
+    <string name="title_activity_my_places">My Places</string>
+    <string name="title_activity_add_place">Add Place</string>
+    <string name="title_activity_place_info">Place Info</string>
+    <string name="nearby_search">Nearby</string>
+    <string name="related_search">Search</string>
+    <string name="my_places">My Places</string>
+    <string name="log_out">Log Out</string>
+
+    <!--shared preference-->
+    <string name="SHARED_PREFS">com.example.hieunguyen725.myplaces.prefs</string>
+    <string name="LOGGEDIN">loggedin</string>
+    <string name="LOGGEDIN_USER">loggedin_user</string>
+</resources>

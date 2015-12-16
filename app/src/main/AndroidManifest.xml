@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.hieunguyen725.myplaces" >
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="controller.MainActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name="controller.LogInActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_log_in">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="controller.RegisterActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_register"
+            android:parentActivityName="controller.LogInActivity" >
+        </activity>
+        <activity
+            android:name="controller.NearbySearchActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_nearby_search">hi
+        </activity>
+        <activity
+            android:name="controller.RelatedSearchActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_related_search">
+        </activity>
+        <activity
+            android:name="controller.MyPlacesActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_my_places">
+        </activity>
+        <activity
+            android:name="controller.AddPlaceActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_add_place"
+            android:parentActivityName="controller.MyPlacesActivity">
+        </activity>
+        <activity
+            android:name="controller.PlaceInfoActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:label="@string/title_activity_place_info"
+            android:parentActivityName="controller.MainActivity" >
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="controller.MainActivity" />
+        </activity>
+    </application>
+
+</manifest>

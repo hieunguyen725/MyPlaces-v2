@@ -1,0 +1,25 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="controller.NearbySearchActivity">
+
+    <item
+        android:id="@+id/related_search"
+        android:title="@string/related_search"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/nearby_search"
+        android:title="@string/nearby_search"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/my_places"
+        android:title="@string/my_places"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/log_out"
+        android:title="@string/log_out"
+        app:showAsAction="never"/>
+</menu>

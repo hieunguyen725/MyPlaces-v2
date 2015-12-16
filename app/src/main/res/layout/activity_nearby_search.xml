@@ -1,0 +1,65 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="controller.NearbySearchActivity">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nearbySearch_keyword"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="42dp"
+        android:hint="Keyword" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/nearbySearch_radius"
+        android:layout_marginTop="25dp"
+        android:hint="Radius in mile"
+        android:layout_below="@+id/nearbySearch_keyword"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="Search"
+        android:id="@+id/nearbySearch_search_button"
+        android:layout_below="@+id/nearbySearch_radius"
+        android:layout_centerHorizontal="true"
+        android:background="#E91E63"
+        android:layout_marginTop="20dp"
+        android:onClick="searchButtonOnClick"
+        android:textColor="@android:color/white" />
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nearbySearch_listview"
+        android:layout_below="@+id/nearbySearch_search_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp" />
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nearbySearch_progressBar"
+        android:layout_alignBottom="@+id/nearbySearch_listview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="109dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/nearbySearch_googlelogo"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/powered_by_google_on_white"/>
+
+</RelativeLayout>

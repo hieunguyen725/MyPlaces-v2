@@ -1,0 +1,151 @@
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context="controller.PlaceInfoActivity">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/placeinfo_googlelogo"
+        android:layout_gravity="right"
+        android:layout_marginBottom="14dp"
+        android:src="@drawable/powered_by_google_on_white"/>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="35dp">
+
+                <Button
+                    android:layout_width="70dp"
+                    android:layout_height="30dp"
+                    android:text="Save"
+                    android:id="@+id/placeInfo_save_button"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="#E91E63"
+                    android:textColor="@android:color/white"
+                    android:onClick="saveButtonOnClick" />
+
+                <Button
+                    android:layout_width="90dp"
+                    android:layout_height="30dp"
+                    android:text="Direction"
+                    android:id="@+id/placeInfo_direction_button"
+                    android:layout_toLeftOf="@+id/placeInfo_save_button"
+                    android:layout_toStartOf="@+id/placeInfo_save_button"
+                    android:background="#E91E63"
+                    android:layout_marginRight="20dp"
+                    android:textColor="@android:color/white"
+                    android:onClick="directionButtonOnClick" />
+
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:text="View Website"
+                    android:id="@+id/placeInfo_viewweb"
+                    android:onClick="viewWebOnClick"
+                    android:background="#E91E63"
+                    android:layout_alignTop="@+id/placeInfo_direction_button"
+                    android:layout_toLeftOf="@+id/placeInfo_direction_button"
+                    android:layout_toStartOf="@+id/placeInfo_direction_button"
+                    android:layout_marginRight="20dp"
+                    android:textColor="@android:color/white" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name: "
+                android:id="@+id/placeInfo_name_tv"
+                android:textSize="15sp"
+                android:layout_marginBottom="20dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeInfo_address_tv"
+                android:layout_marginBottom="20dp"
+                android:textSize="15sp"
+                android:text="Address: " />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Place type: "
+                android:id="@+id/placeInfo_placeType_tv"
+                android:layout_marginBottom="20dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Phone: "
+                android:id="@+id/placeInfo_phone_tv"
+                android:layout_marginBottom="20dp"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeInfo_description_tv"
+                android:textSize="15sp" />
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeInfo_progressBar"
+                android:layout_alignBottom="@+id/placeInfo_save_button"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp"
+                    android:id="@+id/placeInfo_images_list">
+
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeInfo_opening_hours_tv"
+                android:layout_marginBottom="20dp"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/placeInfo_reviews_tv"
+                android:layout_marginBottom="20dp"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
