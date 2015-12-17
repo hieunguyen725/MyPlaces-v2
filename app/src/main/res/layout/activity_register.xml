@@ -26,9 +26,8 @@
         android:layout_below="@+id/register_title"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="43dp"
-        android:layout_alignParentEnd="true"
         android:hint="Username"
-        android:autoText="false" />
+        android:inputType="text"/>
 
     <EditText
         android:layout_width="match_parent"

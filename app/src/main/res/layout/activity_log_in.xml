@@ -32,7 +32,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="30dp"
-        android:text="Log In"
+        android:text="LOG IN"
         android:id="@+id/login_button"
         android:layout_below="@+id/login_password"
         android:layout_centerHorizontal="true"
@@ -45,7 +45,7 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="150dp"
         android:layout_height="30dp"
-        android:text="Create Account"
+        android:text="CREATE ACCOUNT"
         android:id="@+id/login_create_account"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"

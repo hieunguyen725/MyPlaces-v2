@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -298,10 +299,10 @@ public class PlaceInfoActivity extends AppCompatActivity {
         TextView reviews = (TextView) findViewById(R.id.placeInfo_reviews_tv);
 
         // Display the place's basic information.
-        placeName.setText("Name: " + mCurrentPlace.getName());
-        placeAddress.setText("Address: " + mCurrentPlace.getAddress());
-        placeType.setText("Place type: " + mCurrentPlace.getMainType());
-        placePhone.setText("Phone: " + mCurrentPlace.getPhoneNumber());
+        placeName.setText(Html.fromHtml("<b>Name:</b> &nbsp; " + mCurrentPlace.getName()));
+        placeAddress.setText(Html.fromHtml("<b>Address:</b> &nbsp; " + mCurrentPlace.getAddress()));
+        placeType.setText(Html.fromHtml("<b>Place Type:</b>  &nbsp;" + mCurrentPlace.getMainType()));
+        placePhone.setText(Html.fromHtml("<b>Phone:</b> &nbsp;" + mCurrentPlace.getPhoneNumber()));
 
         // Calculate the average height of the place's images if they are not
         // not null then add image to the layout.
@@ -317,17 +318,17 @@ public class PlaceInfoActivity extends AppCompatActivity {
             }
         }
         if (!mCurrentPlace.getDescription().equals("Not available")) {
-            placeDescription.setText("Description: " + mCurrentPlace.getDescription());
+            placeDescription.setText(Html.fromHtml("<b>Description:</b> &nbsp; " + mCurrentPlace.getDescription()));
         } else {
             placeDescription.setHeight(0);
             placeDescription.setWidth(0);
             placeDescription.setPadding(0, 0, 0, 0);
         }
         if (mCurrentPlace.getOpeningHours() != null) {
-            openingHours.setText("Opening hours: \n\n" + mCurrentPlace.getOpeningHours());
+            openingHours.setText(Html.fromHtml("<b>Opening hours:</b> <br/> <br/>" + mCurrentPlace.getOpeningHours()));
         }
         if (mCurrentPlace.getReviews() != null) {
-            reviews.setText("Reviews: \n\n" + mCurrentPlace.getReviews());
+            reviews.setText(Html.fromHtml("<b>Reviews:</b> <br/> <br/>" + mCurrentPlace.getReviews()));
         }
     }
 
@@ -384,15 +385,28 @@ public class PlaceInfoActivity extends AppCompatActivity {
                         ParsePlace place = new ParsePlace();
                         place.setData(mCurrentPlace);
                         place.saveInBackground();
-                        Toast.makeText(getApplication(), "Place Saved", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplication(), "Place Added", Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(getApplication(), "Place is already saved", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplication(), "Place is already added", Toast.LENGTH_LONG).show();
                     }
                 }
             });
 
         } else {
             Toast.makeText(this, "No network connection available", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Dial the phone number once the user pressed on it.
+     */
+    public void phoneOnClick(View v) {
+        if (!mCurrentPlace.getPhoneNumber().equals("Not available")) {
+            Intent callIntent = new Intent(Intent.ACTION_DIAL);
+            callIntent.setData(Uri.parse("tel:" + mCurrentPlace.getPhoneNumber()));
+            startActivity(callIntent);
+        } else {
+            Toast.makeText(this, "Phone number is not available", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -488,9 +502,4 @@ public class PlaceInfoActivity extends AppCompatActivity {
             return false;
         }
     }
-
-
-
-
-
 }

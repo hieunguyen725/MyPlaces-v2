@@ -22,7 +22,7 @@ public class ParsePlace extends ParseObject {
         put("address", place.getAddress());
         put("mainType", place.getMainType());
         put("description", place.getDescription());
-        put("phoneNumber", place.getIconURL());
+        put("phoneNumber", place.getPhoneNumber());
         put("iconURL", place.getIconURL());
         put("contentResource", place.getContentResource());
     }

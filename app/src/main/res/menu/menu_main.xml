@@ -15,7 +15,7 @@
     <item
         android:id="@+id/my_places"
         android:title="@string/my_places"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/log_out"

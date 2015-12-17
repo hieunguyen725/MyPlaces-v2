@@ -87,7 +87,9 @@ public class JSONParser {
             newPlace.setLat(location.getDouble("lat"));
             newPlace.setLng(location.getDouble("lng"));
             newPlace.setIconURL(resultInfo.getString("icon"));
-            newPlace.setMainType(resultInfo.getJSONArray("types").getString(0).replace("_", " "));
+            String type = resultInfo.getJSONArray("types").getString(0).replace("_", " ");
+            type = type.substring(0, 1).toUpperCase() + type.substring(1);
+            newPlace.setMainType(type);
             // Retrieve extra information about the place.
             if (resultInfo.has("photos")) {
                 newPlace.setImageReferences(new ArrayList<String>());
@@ -106,7 +108,7 @@ public class JSONParser {
                 JSONArray weekdayText = openingHours.getJSONArray("weekday_text");
                 String weekdayHours = "";
                 for (int i = 0; i < weekdayText.length(); i++) {
-                    weekdayHours += weekdayText.getString(i) + "\n";
+                    weekdayHours += weekdayText.getString(i) + "<br/>";
                 }
                 newPlace.setOpeningHours(weekdayHours);
             }
@@ -118,7 +120,8 @@ public class JSONParser {
                 // each review.
                 for (int i = 0; i < reviews.length(); i++) {
                     JSONObject review = reviews.getJSONObject(i);
-                    reviewsText += (i + 1) + ".   " + review.getString("text") + "\n\n";
+                    reviewsText += (i + 1) + ".&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                            + review.getString("text") + "<br/><br/>";
                 }
                 newPlace.setReviews(reviewsText);
             }
