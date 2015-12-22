@@ -1,6 +1,6 @@
 # MyPlaces-v2
 
-This is the second version of the project, to view the first version, please see MyPlaces repository.
+This is the second version of the project. To view the first version, please see the MyPlaces repository.
 
 #### Introduction
 
